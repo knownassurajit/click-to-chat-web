@@ -10,19 +10,19 @@ on:
       - master
       - develop
 
-# Required permissions for deploying
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
-  # Job 1: Build the docker container and run tests
+  # Job 1: Build the docker container and run integration tests
   test:
     uses: ./.github/workflows/ci-test.yml
 
-  # Job 2: Deploy to GitHub Pages (Only runs on push/merge to master after test passes)
+  # Job 2: Deploy to Vercel (Runs sequentially only after test succeeds on push to master or develop)
   deploy:
     needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
     uses: ./.github/workflows/cd-deploy.yml
+    with:
+      is-prod: ${{ github.ref == 'refs/heads/master' && 'true' || 'false' }}
+    secrets: inherit

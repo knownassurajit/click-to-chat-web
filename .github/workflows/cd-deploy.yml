@@ -1,39 +1,32 @@
-name: Deploy to GitHub Pages
+name: Deploy to Vercel
 
 on:
   workflow_call:
-    # This makes the workflow reusable
-
-# Explicit permissions required for native GitHub Pages deployments
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs in-progress
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+    inputs:
+      is-prod:
+        required: true
+        type: string
+        description: "True to deploy to Vercel Production, false for Vercel Preview"
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to Vercel
+        id: deploy-vercel
+        uses: amondnet/vercel-action@v20
         with:
-          # Upload the entire root directory (excluding .git and github workflows)
-          path: '.'
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: ${{ inputs.is-prod == 'true' && '--prod' || '' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Publish Deployment URL to Job Summary
+        run: |
+          echo "### Vercel Deployment Successful! 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target Environment**: ${{ inputs.is-prod == 'true' && 'Production' || 'Preview/Staging' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Deployment URL**: ${{ steps.deploy-vercel.outputs.vercel-url }}" >> $GITHUB_STEP_SUMMARY
