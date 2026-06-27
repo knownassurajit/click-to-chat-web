@@ -15,10 +15,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: "npm"
 
       - name: Install Testing Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build Docker Container
         run: docker build -t click-to-chat-web-app:latest .
@@ -33,6 +32,7 @@ jobs:
         env:
           TEST_TARGET_URL: http://localhost:8080
           TEST_REPORT_PATH: ${{ github.workspace }}/tests/test-report.md
+          NODE_NO_WARNINGS: 1
         run: npm test
 
       - name: Publish Test Report to Job Summary
