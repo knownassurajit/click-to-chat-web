@@ -4,8 +4,8 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# Testing Files & Directories
-tests/
+# Testing Output (keep test scripts, exclude generated reports)
+tests/test-report.md
 
 # Environment Variables & Secrets
 .env
