@@ -1,0 +1,28 @@
+name: Click to Chat CI-CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
+
+# Required permissions for deploying
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # Job 1: Build the docker container and run tests
+  test:
+    uses: ./.github/workflows/ci-test.yml
+
+  # Job 2: Deploy to GitHub Pages (Only runs on push/merge to master after test passes)
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    uses: ./.github/workflows/cd-deploy.yml

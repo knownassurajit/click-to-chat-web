@@ -1,0 +1,13 @@
+{
+  "name": "click-to-chat-web",
+  "version": "1.8.2",
+  "description": "WhatsApp click-to-chat web app",
+  "main": "app.js",
+  "scripts": {
+    "test": "node tests/run_tests.js"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  },
+  "private": true
+}

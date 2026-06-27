@@ -1,0 +1,58 @@
+name: Containerized Test Suite
+
+on:
+  workflow_call:
+    # This makes the workflow reusable
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Testing Dependencies
+        run: npm ci
+
+      - name: Build Docker Container
+        run: docker build -t click-to-chat-web-app:latest .
+
+      - name: Run Container on Port 8080
+        run: |
+          docker run -d -p 8080:80 --name click-to-chat-container click-to-chat-web-app:latest
+          # Wait for container to be ready
+          sleep 3
+
+      - name: Execute Integration Test Suite
+        env:
+          TEST_TARGET_URL: http://localhost:8080
+          TEST_REPORT_PATH: ${{ github.workspace }}/tests/test-report.md
+        run: npm test
+
+      - name: Publish Test Report to Job Summary
+        if: always()
+        run: |
+          if [ -f "${{ github.workspace }}/tests/test-report.md" ]; then
+            cat "${{ github.workspace }}/tests/test-report.md" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### Test report not found!" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload Test Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: containerized-test-report
+          path: ${{ github.workspace }}/tests/test-report.md
+
+      - name: Stop and Clean Container
+        if: always()
+        run: |
+          docker stop click-to-chat-container || true
+          docker rm click-to-chat-container || true
