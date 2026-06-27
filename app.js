@@ -247,6 +247,9 @@ function init() {
   });
   
   updateValidation();
+  
+  // Set body loaded to trigger fade-in transition
+  document.body.classList.add("loaded");
 }
 
 /**
@@ -290,15 +293,18 @@ function detectUserRegion() {
 function setupCountrySelector() {
   renderCountryItems(COUNTRIES);
   
-  // Custom Popover Trigger positioning
-  elCountryTrigger.addEventListener("click", () => {
-    // Positioning the popover just below the outline text field
-    const rect = elCountryTrigger.getBoundingClientRect();
-    elPopover.style.top = `${rect.bottom + window.scrollY}px`;
-    elPopover.style.left = `${rect.left + window.scrollX}px`;
-    
-    // Focus search input after popover shows
-    setTimeout(() => elSearchInput.focus(), 50);
+  // Custom Dropdown toggle
+  elCountryTrigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isHidden = elPopover.style.display === "none";
+    if (isHidden) {
+      elPopover.style.display = "flex";
+      elSearchInput.value = "";
+      renderCountryItems(COUNTRIES); // Reset list to full
+      setTimeout(() => elSearchInput.focus(), 50);
+    } else {
+      elPopover.style.display = "none";
+    }
   });
 }
 
@@ -363,23 +369,15 @@ function selectCountry(country) {
  * Closes the country selector popover
  */
 function closePopover() {
-  if (elPopover.hidePopover) {
-    try {
-      elPopover.hidePopover();
-    } catch (e) {
-      elPopover.style.display = "none";
-    }
-  } else {
-    elPopover.style.display = "none";
-  }
+  elPopover.style.display = "none";
 }
 
 /**
  * Handles clicks outside the popover to close it (for compatibility/robustness)
  */
 function handleOutsideClick(e) {
-  const trigger = document.getElementById("country-trigger-container");
-  if (!trigger.contains(e.target) && !elPopover.contains(e.target)) {
+  const container = document.getElementById("country-textfield");
+  if (container && !container.contains(e.target)) {
     closePopover();
   }
 }

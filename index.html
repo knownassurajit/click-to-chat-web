@@ -38,15 +38,27 @@
         <div class="input-row">
           
           <!-- Country Prefix Selector (Custom M3 OutlinedTextField) -->
-          <div class="m3-textfield prefix-container is-active" id="country-textfield">
+          <div class="m3-textfield prefix-container is-active" id="country-textfield" style="position: relative;">
             <div class="m3-textfield-outline" id="country-trigger-container">
-              <button type="button" id="country-trigger" class="country-trigger" popovertarget="country-popover">
+              <button type="button" id="country-trigger" class="country-trigger">
                 <span id="selected-flag" class="country-flag">🇮🇳</span>
                 <span id="selected-code" class="country-code-text">+91</span>
                 <span class="material-symbols-outlined country-dropdown-arrow">arrow_drop_down</span>
               </button>
               <label class="m3-textfield-label">Country</label>
             </div>
+            
+            <!-- Country Search Dropdown -->
+            <div id="country-popover" class="country-popover-panel" style="display: none;">
+              <div class="search-container">
+                <span class="material-symbols-outlined search-icon">search</span>
+                <input type="text" id="country-search" class="search-input" placeholder="Search country..." autocomplete="off">
+              </div>
+              <div id="country-list" class="country-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+            
             <div class="m3-textfield-support"></div>
           </div>
           
@@ -96,16 +108,7 @@
     </main>
   </div>
 
-  <!-- Country Search Popover Dialog -->
-  <div id="country-popover" popover>
-    <div class="search-container">
-      <span class="material-symbols-outlined search-icon">search</span>
-      <input type="text" id="country-search" class="search-input" placeholder="Search country or code..." autocomplete="off">
-    </div>
-    <div id="country-list" class="country-list">
-      <!-- Dynamically populated -->
-    </div>
-  </div>
+
 
   <!-- Toast Feedbacks -->
   <div id="toast-message" class="m3-toast">

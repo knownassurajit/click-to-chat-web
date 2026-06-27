@@ -95,7 +95,12 @@ body {
   justify-content: center;
   align-items: center;
   overflow-x: hidden;
-  transition: background-color 0.3s ease;
+  opacity: 0;
+  transition: background-color 0.3s ease, opacity 0.25s ease-out;
+}
+
+body.loaded {
+  opacity: 1;
 }
 
 /* Center Centered Standard Dialog Layout for Desktop */
@@ -332,42 +337,23 @@ body {
   transition: transform 0.2s ease;
 }
 
-/* Country Popover Panel */
-[popover] {
+/* Country Popover Panel (Absolute inside relative parent) */
+.country-popover-panel {
   position: absolute;
-  inset: unset;
+  top: 60px; /* Positions below the 56px high input outline */
+  left: 0;
   border: none;
   background-color: var(--md-sys-color-surface-container-highest);
   color: var(--md-sys-color-on-surface);
   border-radius: var(--md-shape-corner-medium);
-  box-shadow: var(--md-sys-elevation-2);
-  width: 320px;
-  max-height: 400px;
+  box-shadow: var(--md-sys-elevation-3);
+  width: 300px;
+  max-height: 350px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  margin-top: 8px;
   z-index: 1000;
-}
-
-/* Popover Animations utilizing @starting-style */
-[popover]:popover-open {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-
-  @starting-style {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.95);
-  }
-}
-
-[popover] {
-  opacity: 0;
-  transform: translateY(-8px) scale(0.95);
-  transition-property: opacity, transform, display, overlay;
-  transition-duration: 0.2s;
-  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
-  transition-behavior: allow-discrete;
+  transition: opacity 0.15s cubic-bezier(0.2, 0, 0, 1), transform 0.15s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .search-container {
@@ -475,9 +461,9 @@ body {
 }
 
 .btn-primary:disabled {
-  background-color: var(--md-sys-color-on-surface);
-  color: var(--md-sys-color-on-surface);
-  opacity: 0.12;
+  background-color: var(--md-sys-color-surface-container-highest);
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.38;
   cursor: not-allowed;
   box-shadow: none;
 }
@@ -538,16 +524,22 @@ body {
   align-items: center;
   justify-content: center;
   color: var(--md-sys-color-primary);
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, opacity 0.2s;
   flex-shrink: 0;
 }
 
-.btn-copy:hover {
+.btn-copy:hover:not(:disabled) {
   background-color: var(--md-sys-color-primary-container);
 }
 
-.btn-copy:active {
+.btn-copy:active:not(:disabled) {
   transform: scale(0.9);
+}
+
+.btn-copy:disabled {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.38;
+  cursor: not-allowed;
 }
 
 /* Session History Section */
